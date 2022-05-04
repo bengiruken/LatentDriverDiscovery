@@ -121,7 +121,7 @@ class TCGA_MAF:
 
 
 
-path1="/Users/bengi/Desktop/CommsBioRevision_Final_9Dec/REVISION#2/TCGA_MC3"
+path1=PATH_NAME
 file_name1 = "MC3_TCGA_Mutations.txt"
 
 df = TCGA_MAF(path=path1,file_name = file_name1) 

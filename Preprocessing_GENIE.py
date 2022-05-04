@@ -229,7 +229,7 @@ class GENIE_MAF:
 
  
     
-df = GENIE_MAF(path="/Users/bengi/Desktop/CommsBioRevision_Final_9Dec/REVISION#2/GENIE_DATA_VOL_6",file_name = "data_mutations_extended.txt")        
+df = GENIE_MAF(path=PATH_NAME,file_name = "data_mutations_extended.txt")        
 #need to call this to write preprocessed and parsed file to file
 df.PreprocessingGenieMutationFile()
 

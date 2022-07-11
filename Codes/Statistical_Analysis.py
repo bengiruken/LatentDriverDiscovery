@@ -13,7 +13,7 @@ from Preprocessing_TCGA import Convert_Maf_to_Txt
 #Convert_Maf_to_Txt()
 
 mut_file_tcga = "MC3_TCGA_Mutations.txt" 
-path = "/Users/bengi/Desktop/CommsBioRevision_Final_9Dec/REVISION#2/DATA_CODES_new/OOP_OUTPUT"       
+path = ".Data"       
 maf_tcga = TCGA_MAF(path,mut_file_tcga )  
 
  
@@ -22,15 +22,16 @@ maf_tcga = TCGA_MAF(path,mut_file_tcga )
 DF_tcga=maf_tcga.PreprocessingTcgaMutationFile()
 
 import pickle
-#pickle.dump(DF_tcga, open("Preprocessed_TCGA_df.p", "wb"))    
+#pickle.dump(DF_tcga, open("./Data/Preprocessed_TCGA_df.p", "wb"))    
 #############3
 
 #2.GENIE to PICKLE
 
 from Preprocessing_GENIE import GENIE_MAF
 
-path_genie="/Users/bengi/Desktop/CommsBioRevision_Final_9Dec/REVISION#2/GENIE_DATA_VOL_6"
+path_genie="./Data"
 
+"""data_mutations_extended.txt (AACR GENIE vol. 6.1) can be downloaded from https://doi.org/10.7303/syn20333031 into the Data folder"""
 mut_file_genie = "data_mutations_extended.txt"
 maf_genie = GENIE_MAF(path_genie,mut_file_genie )  
 
@@ -39,16 +40,16 @@ df_genie=maf_genie.PreprocessingGenieMutationFile()
 df_genie_tumor=maf_genie.return_GENIE_patient_tumor_df()
 
 # import pickle
-# pickle.dump(df_genie, open("Preprocessed_GENIE_df.p", "wb")) 
+# pickle.dump(df_genie, open("./Data/Preprocessed_GENIE_df.p", "wb")) 
 
-# pickle.dump(df_genie_tumor, open("Preprocessed_GENIE_Patient_Sample_Info_df.p", "wb"))
+# pickle.dump(df_genie_tumor, open("./Data/Preprocessed_GENIE_Patient_Sample_Info_df.p", "wb"))
 
 
 ##########
 #3_Get necessary files dictionaries from preprocessed pickle files of tcga
 #write dictionaries as pickle
 #
-path_merged = "/Users/bengi/Desktop/CommsBioRevision_Final_9Dec/REVISION#2/DATA_CODES_new/OOP_OUTPUT"
+path_merged = "./Data"
 tcga_file_name  = "Preprocessed_TCGA_df.p"
 genie_file_name = "Preprocessed_GENIE_df.p"
 import pickle
@@ -114,7 +115,7 @@ len(Tumor_Same_Gene_Double_Dictionary)-no_double_tumor
 #pickle.dump(All_Doubles, open("All_Potential_Same_Gene_Doubles_Set.p", "wb")) 
 ##################
 #All gene mutants (mutations >=3 tumors are included only)
-Gene_Mutation_Tumor_Dictionary=pickle.load(open("Merged_GENIE_TCGA_Gene_Mutation_Tumor_Dict.p", "rb"))    #merged_obj.Merged_TCGA_GENIE_Tumor_GeneMutation_GEQ3_Dictionary()
+Gene_Mutation_Tumor_Dictionary=pickle.load(open("./Data/Merged_GENIE_TCGA_Gene_Mutation_Tumor_Dict.p", "rb"))    #merged_obj.Merged_TCGA_GENIE_Tumor_GeneMutation_GEQ3_Dictionary()
 Mutation_List_GEQ3 
 
 All_Genes = sorted(list(Gene_Mutation_Tumor_Dictionary.keys()))
@@ -128,16 +129,16 @@ for gene in Gene_All_Mutants_Dict.keys():
             Gene_All_Mutants_Dict[gene] = Gene_All_Mutants_Dict[gene].union(Gene_Mutation_Tumor_Dictionary[gene][mut])
             
 len(Gene_All_Mutants_Dict["PIK3CA"])            
-pickle.dump(Gene_All_Mutants_Dict, open("Gene_All_Mutants_Dictionary.p", "wb")) 
+pickle.dump(Gene_All_Mutants_Dict, open("./Data/Gene_All_Mutants_Dictionary.p", "wb")) 
 """  
-Gene_All_Mutants_Dictionary =  pickle.load(open("Gene_All_Mutants_Dictionary.p", "rb")) 
+Gene_All_Mutants_Dictionary =  pickle.load(open("./Data/Gene_All_Mutants_Dictionary.p", "rb")) 
 len(Gene_All_Mutants_Dictionary["PIK3CA"])         
 #################3
 #FISHER EXACT TEST AMONG ALL TUMORS with at least one mutation of VAF>0.125
 from scipy.stats import fisher_exact
 import numpy as np
 #first write header
-with open("Potential_SameGeneDoubles_Fisher_Exact_Test.txt","a") as outfile:
+with open("./Data/Potential_SameGeneDoubles_Fisher_Exact_Test.txt","a") as outfile:
     outfile.write("Gene"+"\t"+"Mut1"+"\t"+"Mut2"+"\t"+"DoubleMut#"+"\t"+"OnlyMut1"+"\t"+"OnlyMut2"+"\t"+"GeneMutant#"+"\t"+\
                   "AllTumor#VAF>"+"\t"+"p4"+"\t"+"OddsR4"+"\n")
 #calculate p-values with fisher exact test for different contingency tables
@@ -158,7 +159,7 @@ for double in All_Doubles:
 
     oddsr4, p4 = fisher_exact(table4, alternative='two-sided')
 
-    with open("Potential_SameGeneDoubles_Fisher_Exact_Test.txt","a") as outfile:
+    with open("./Data/Potential_SameGeneDoubles_Fisher_Exact_Test.txt","a") as outfile:
         outfile.write(gene+"\t"+mut1+"\t"+mut2+"\t"+str(a)+"\t"+str(b)+"\t"+str(c)+"\t"+str(gene_all_mutants)+"\t"+str(len(all_tumors))+"\t"+str(p4)+"\t"+ str(oddsr4) +"\n")
 
 #################3
@@ -177,7 +178,7 @@ def FDR_Correction():
     from pandas import ExcelWriter
     import numpy as np
     
-    OG_TSG_Dict =  pickle.load(open("OG_TSG_Dictionary.p", "rb")) 
+    OG_TSG_Dict =  pickle.load(open("./Data/OG_TSG_Dictionary.p", "rb")) 
     OncogenicMutations =  pickle.load(open("OncogenicMutations_Dictionary.p", "rb")) 
     
     df_stats=pd.read_csv("Potential_SameGeneDoubles_Fisher_Exact_Test.txt",sep="\t")
@@ -250,11 +251,11 @@ def FDR_Correction():
             df_stats.at[ind,"Tendency"]="Mutual Exclusivity"
         
     
-    df_stats.to_csv("Potential_SameGeneDoubles_Fisher_Exact_Test_FDR_Multiple_Testing.txt",sep="\t",index=False,header=True)
+    df_stats.to_csv("./Data/Potential_SameGeneDoubles_Fisher_Exact_Test_FDR_Multiple_Testing.txt",sep="\t",index=False,header=True)
     
 
     ####
-    writer = ExcelWriter('Potential_SameGeneDoubles_Fisher_Exact_Test_FDR_Multiple_Testing.xlsx', engine='xlsxwriter')
+    writer = ExcelWriter('./Data/Potential_SameGeneDoubles_Fisher_Exact_Test_FDR_Multiple_Testing.xlsx', engine='xlsxwriter')
     df_stats.to_excel(writer,'Statistics_AmongAllTumors',index=False,header=True)
     # Close the Pandas Excel writer and output the Excel file.
     writer.save()
@@ -269,7 +270,7 @@ FDR_Correction()
 
 import pandas as pd
 
-df_significant = pd.read_csv("Potential_SameGeneDoubles_Fisher_Exact_Test_FDR_Multiple_Testing.txt", sep="\t")
+df_significant = pd.read_csv("./Data/Potential_SameGeneDoubles_Fisher_Exact_Test_FDR_Multiple_Testing.txt", sep="\t")
 df_significant.columns
 
 df_significant = df_significant[(df_significant['p4']<0.05)&(df_significant['Qval4']<0.1)]
@@ -363,30 +364,30 @@ df_new1.loc[((df_new1['Class1']=="WeakLatentDriver") & # if discount is more tha
        (df_new1['Class2']=="WeakLatentDriver")), 'Activation'] = 30 # then set class to 1
 
 ########
-######   Filtering 1, number of double mutaant 
+######   Filtering 1, number of double mutant 
 df_new2 = df_new1[df_new1['DoubleMut#']>=3]  
 
-df_new2.to_csv("Significant_Double_Mutations.txt",sep="\t",index=False,header=True)                                                 
+df_new2.to_csv("./Data/Significant_Double_Mutations.txt",sep="\t",index=False,header=True)                                                 
 ###########3
 
 """OG_TSG_Dict={}
-with open("/Users/bengi/Desktop/CommsBioRevision_Final_9Dec/REVISION#2/DATA_CODES_new/OncoKB_CancerGeneList_OG_TSG_Label.txt","r") as infile:
+with open("./Data/OncoKB_CancerGeneList_OG_TSG_Label.txt","r") as infile:
     for line in infile:
         if "Hugo" not in line:
             splitted=line.rstrip("\n").split("\t")
             OG_TSG_Dict[splitted[0]]=splitted[-1]
 OG_TSG_Dict["PIK3CA"]
-pickle.dump(OG_TSG_Dict , open("OG_TSG_Dictionary.p", "wb")) 
+pickle.dump(OG_TSG_Dict , open("./Data/OG_TSG_Dictionary.p", "wb")) 
     
 OG_TSG_Dict        
 #get the list of oncogenic drivers        
 OncogenicMutations=[]
-with open("/Users/bengi/Desktop/CommsBioRevision_Final_9Dec/REVISION#2/DATA_CODES_new/Oncogenic_Driver_Mutations_from_CGI.txt","r") as infile:
+with open("./Data/Oncogenic_Driver_Mutations_from_CGI.txt","r") as infile:
     for line in infile:
         if  "Residue" not in line:
             splitted=line.rstrip("\n").split("\t")    
             OncogenicMutations.append(splitted[0]+"_"+splitted[-1])
-pickle.dump(OncogenicMutations , open("OncogenicMutations_Dictionary.p", "wb")) """
+pickle.dump(OncogenicMutations , open("./Data/OncogenicMutations_Dictionary.p", "wb")) """
 
 
 

@@ -9,6 +9,8 @@ Created on Fri Feb 11 21:45:05 2022
 import pandas as pd
 import os
 
+
+
 class TCGA_MAF:
     
     def __init__(self, path, file_name):
@@ -26,12 +28,7 @@ class TCGA_MAF:
         self.SpecificColumns = SpecificColumns   
         self.mutation_df = pd.read_csv( self.file_path, sep = "\t", usecols = SpecificColumns, comment="#")
     
-    def Convert_Maf_to_Txt(self):
-         """convert maf file to txt file"""
-         maf_file = os.path.join(self.path, ".../Data/mc3.v0.2.8.PUBLIC.maf")
-         with open(maf_file, 'rb') as fd: #3600964 line in the file, wc -l mc3.v0.2.8.PUBLIC.maf
-             d = pd.read_csv(fd, sep="\t",usecols= self.SpecificColumns)
-         d.to_csv(".../Data/MC3_TCGA_Mutations.txt",sep="\t",header=True,index=False) 
+ 
     
     def GetTumorSamples(self):
         """Select the rows where tumor barcode ends with -01"""
@@ -115,15 +112,36 @@ class TCGA_MAF:
         df_mutation_final_["VAF"]=df_mutation_final_["t_alt_count"]/df_mutation_final_["t_depth"]
         ########write Genie cleaned mutation file as txt file
         #write to file
-        df_mutation_final_.to_csv(".../Data/TCGA_MC3callSet_Mutation_Parsed_File.txt",sep="\t",index=False,header=True)
         self._preprocessed_mutation_df = df_mutation_final_
         return self._preprocessed_mutation_df
+    
+    # def write_tcga_to_csv(self):
+    #     df_tcga_preprocessed = self.PreprocessingTcgaMutationFile()
+    #     df_tcga_preprocessed.to_csv("./OOP_OUTPUT/OOP_Generated_TCGA_MC3callSet_Mutation_Cleaned_Parsed_File__new.txt",sep="\t",index=False,header=True)
+
+
+def Convert_Maf_to_Txt(path="./Data"):
+    SpecificColumns = ['Hugo_Symbol','Center','Variant_Classification', 'Variant_Type', "Reference_Allele","Tumor_Seq_Allele1","Tumor_Seq_Allele2", \
+                     'Tumor_Sample_Barcode','Matched_Norm_Sample_Barcode', 'HGVSp_Short',\
+                     "t_ref_count","t_alt_count","Codons","SWISSPROT","t_depth"] #select specific columns to read
+    
+    """convert maf file to txt file"""
+    """MC3 Public MAF of TCGA data (file name: "mc3.v0.2.8.PUBLIC.maf") can be downloaded from "https://api.gdc.cancer.gov/data/1c8cfe5f-e52d-41ba-94da-f15ea1337efc" into the Data folder   """
+    maf_file = os.path.join(path, "mc3.v0.2.8.PUBLIC.maf") 
+    with open(maf_file, 'rb') as fd: #3600964 line in the file, wc -l mc3.v0.2.8.PUBLIC.maf
+        d = pd.read_csv(fd, sep="\t",usecols= SpecificColumns)
+    d.to_csv("MC3_TCGA_Mutations.txt",sep="\t",header=True,index=False) 
 
 
 
-path1=".../Data"
-file_name1 = "MC3_TCGA_Mutations.txt"
 
-df = TCGA_MAF(path=path1,file_name = file_name1) 
-df.PreprocessingTcgaMutationFile()
-df_mut = df.mutation_df       
+# mut_file_tcga = "MC3_TCGA_Mutations.txt" 
+# path = "/Users/bengi/Desktop/CommsBioRevision_Final_9Dec/REVISION#2/DATA_CODES_new/OOP_OUTPUT"       
+# merged = TCGA_MAF(path,mut_file_tcga )  
+
+ 
+# import pickle
+
+# DF=merged.tcga_df
+# pickle.dump(DF, open("TCGA_df.p", "wb"))    
+

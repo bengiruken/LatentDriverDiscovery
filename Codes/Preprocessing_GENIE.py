@@ -8,6 +8,7 @@ Created on Mon Feb  7 21:06:49 2022
 import pandas as pd
 import os
 
+
 class GENIE_MAF:
     
     def __init__(self, path, file_name):
@@ -38,13 +39,13 @@ class GENIE_MAF:
         
     def all_patients(self):
         
-        df_patient = df.patient_df()
+        df_patient = self.patient_df()
         #returns {patient:{tumor:sample_type}} dictionary to check patients with mutltiple samples
         self._all_patient_list =  df_patient["PATIENT_ID"].to_list()
         return self._all_patient_list
     
     def all_tumors(self):
-        df_tumor = df.tumor_df()
+        df_tumor = self.tumor_df()
         #returns {patient:{tumor:sample_type}} dictionary to check patients with mutltiple samples
         self._all_tumor_list =  df_tumor["SAMPLE_ID"].to_list()
         return  self._all_tumor_list
@@ -217,23 +218,42 @@ class GENIE_MAF:
 
         df_mutation_final_["VAF"]=df_mutation_final_["t_alt_count"]/df_mutation_final_["t_depth"]
         ########write Genie cleaned mutation file as txt file
-         ########write Genie cleaned mutation file as txt file
-        #write to file
-         df_mutation_final_.to_csv(".../Data/GENIE_vol6_Mutation_Parsed_File.txt",sep="\t",index=False,header=True)
-         df_tumor_unique_.to_csv(".../Data/GENIE_vol6_Patient_Tumor_Info.txt",sep="\t",index=False,header=True)   
+  
         self._preprocessed_mutation_df = df_mutation_final_
+        
         return self._preprocessed_mutation_df
+    
+    def return_GENIE_patient_tumor_df(self):
+        #from df_tumor, select the rows only with the tumor sample_id's from the cleaned_Patient_Tumor_SampType_Dict's inner dict keys
+        cleaned_Patient_Tumor_SampType_Dict = self.PatientTumorSampleOneToOneMatch()
+        unique_tumor_ids=[tumor for k, v in cleaned_Patient_Tumor_SampType_Dict.items()  for tumor in v.keys() ]
+        df_tumor = self.tumor_df()
+        df_tumor_unique = df_tumor[df_tumor["SAMPLE_ID"].isin(unique_tumor_ids)]
+        df_tumor_unique_=df_tumor_unique[["PATIENT_ID", 'SAMPLE_ID','ONCOTREE_CODE','SAMPLE_TYPE']]
+        
+        self._GENIE_patient_tumor_df = df_tumor_unique_
+        return self._GENIE_patient_tumor_df
+        #df_tumor_unique_.to_csv("OOP_Generated_GENIE_vol6_CleanedPAtient_Tumor_Info.txt",sep="\t",index=False,header=True)   
+        #pickle.dump(df_tumor_unique_, open("Preprocessed_GENIE_Patient_Sample_Info_df.p", "wb")) 
 
 
-
+        
+        # def return_Genie_DF(self):
+        #     df_genie_preprocessed = self.PreprocessingGenieMutationFile()
+        #     self.Genie_DF = df_genie_preprocessed
+        #     return self.Genie_DF
+        #     #returns {patient:{tumor:sample_type}} dictionary to check patients with mutltiple samples
+        #     #self._preprocessed_genie = df_tumor
+        #     #write to file
+        #     #PATH = "/Users/bengi/Desktop/CommsBioRevision_Final_9Dec/REVISION#2/DATA_CODES_new"
+        #     #OPTIONAL 
+        #     """change file names   """
+        #     #pickle.dump(df_genie_preprocessed, open("Preprocessed_GENIE_df.p", "wb")) 
+        #     #df_genie_preprocessed.to_csv("OOP_Generated_GENIE_vol6_Mutation_Cleaned_Parsed_File__new.txt",sep="\t",index=False,header=True)
+        
+        
+        
  
     
-df = GENIE_MAF(path=".../Data",file_name = "data_mutations_extended.txt")        
-#need to call this to write preprocessed and parsed file to file
-df.PreprocessingGenieMutationFile()
 
-
-
- 
-        
  

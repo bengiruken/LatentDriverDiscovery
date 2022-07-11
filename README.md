@@ -8,7 +8,7 @@
 
 # Module Versions 
 
-numpy Version: 1.20.3
+numpy Version: 1.20.3 
 pandas Version: 1.3.4
 scipy Version: 1.7.1
 statmodels Version: 0.12.2

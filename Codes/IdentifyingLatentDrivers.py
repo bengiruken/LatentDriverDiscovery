@@ -1,15 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sat Dec 17 19:42:41 2022
-
-@author: bengi
-"""
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Sep  7 10:36:34 2022
-
 @author: bengi
 """
 ##########

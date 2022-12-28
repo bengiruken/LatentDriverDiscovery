@@ -6,7 +6,7 @@
 ##########
 #Upload necessary files and dictionaries from preprocessed pickle files of TCGA and GENIE cohorts
 
-PATH = ".Data"
+PATH = "./Data"
 
 tcga_file_name  = "Preprocessed_TCGA_df.p"
 genie_file_name = "Preprocessed_GENIE_df.p"
